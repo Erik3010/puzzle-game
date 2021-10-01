@@ -70,22 +70,15 @@ class Game {
     });
   }
   getPiece({ offsetY, offsetX }) {
-    for (let i = 0; i < this.board.length; i++) {
-      const piece = this.board[i];
-      if (
-        offsetX > piece.x &&
-        offsetX < piece.x + piece.width &&
-        offsetY > piece.y &&
-        offsetY < piece.y + piece.height
-      )
-        return piece;
-    }
+    for (let i = 0; i < this.board.length; i++)
+      if (Utility.inRect({ x: offsetX, y: offsetY }, this.board[i]))
+        return this.board[i];
+
     return null;
+    // const y = Math.floor(offsetY / (this.canvas.height / this.size));
+    // const x = Math.floor(offsetX / (this.canvas.width / this.size));
 
-    const y = Math.floor(offsetY / (this.canvas.height / this.size));
-    const x = Math.floor(offsetX / (this.canvas.width / this.size));
-
-    return this.board.find((piece) => piece.id === `${y}|${x}`);
+    // return this.board.find((piece) => piece.id === `${y}|${x}`);
   }
   generateBoard() {
     const randomPosition = Utility.generateRandomPos(this.size * this.size);

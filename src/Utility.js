@@ -9,17 +9,6 @@ class Utility {
     }));
 
     return Utility.shuffle(result);
-
-    // result.forEach((_, index) => {
-    //   const randomIndex = Utility.random(0, length - 1);
-
-    //   [result[index], result[randomIndex]] = [
-    //     result[randomIndex],
-    //     result[index],
-    //   ];
-    // });
-
-    // return result;
   }
   static shuffle(array) {
     const result = JSON.parse(JSON.stringify(array));
@@ -33,5 +22,13 @@ class Utility {
     });
 
     return result;
+  }
+  static inRect(position, piece) {
+    return (
+      position.x > piece.x &&
+      position.x < piece.x + piece.width &&
+      position.y > piece.y &&
+      position.y < piece.y + piece.height
+    );
   }
 }
