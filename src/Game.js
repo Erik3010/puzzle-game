@@ -11,6 +11,9 @@ class Game {
 
     this.loadedImages = [];
 
+    this.mouse = { x: 0, y: 0 };
+    this.current = null;
+
     // this.image = new Image();
     // this.image.src = "assets/image.jpg";
     // this.image.onload = this.init.bind(this);
@@ -20,7 +23,44 @@ class Game {
 
     this.generateBoard();
 
+    this.listener();
+
     this.update();
+  }
+  listener() {
+    this.canvas.addEventListener("mousedown", (e) => {
+      this.current = this.getPiece(e);
+
+      const index = this.board.indexOf(this.current);
+      if (index > -1) {
+        this.board.splice(index, 1);
+        this.board.push(this.current);
+      }
+
+      this.mouse.x = e.offsetX - this.current.x;
+      this.mouse.y = e.offsetY - this.current.y;
+    });
+
+    this.canvas.addEventListener("mousemove", (e) => {
+      if (!this.current) return;
+
+      this.current.x = e.offsetX - this.mouse.x;
+      this.current.y = e.offsetY - this.mouse.y;
+
+      this.board.forEach((piece) => (piece.isHover = false));
+      const hoveredPiece = this.getPiece(e);
+      hoveredPiece.isHover = true;
+    });
+
+    this.canvas.addEventListener("mouseup", (e) => {
+      this.current = null;
+    });
+  }
+  getPiece({ offsetY, offsetX }) {
+    const y = Math.floor(offsetY / (this.canvas.height / this.size));
+    const x = Math.floor(offsetX / (this.canvas.width / this.size));
+
+    return this.board.find((piece) => piece.id === `${y}|${x}`);
   }
   generateBoard() {
     const randomPosition = Utility.generateRandomPos(this.size * this.size);
@@ -35,6 +75,7 @@ class Game {
           ctx: this.ctx,
           width,
           height,
+          id: `${~~(index / this.size)}|${index % this.size}`,
           x: (index % this.size) * width,
           y: ~~(index / this.size) * height,
           rotate: Utility.random(0, 3),
@@ -49,7 +90,11 @@ class Game {
     console.log(this.board);
   }
   update() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     this.board.forEach((board) => board.draw());
+
+    requestAnimationFrame(this.update.bind(this));
   }
   async loadImages() {
     const images = this.images.map(this.loadImage);
