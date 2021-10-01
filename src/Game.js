@@ -30,6 +30,7 @@ class Game {
   listener() {
     this.canvas.addEventListener("mousedown", (e) => {
       this.current = this.getPiece(e);
+      this.current.lastPos = { x: this.current.x, y: this.current.y };
 
       const index = this.board.indexOf(this.current);
       if (index > -1) {
@@ -47,16 +48,40 @@ class Game {
       this.current.x = e.offsetX - this.mouse.x;
       this.current.y = e.offsetY - this.mouse.y;
 
-      this.board.forEach((piece) => (piece.isHover = false));
+      this.clearHover();
       const hoveredPiece = this.getPiece(e);
       hoveredPiece.isHover = true;
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
+      const nextPiece = this.getPiece(e);
+
+      const { x: tempX, y: tempY } = this.current.lastPos;
+
+      this.current.x = nextPiece.x;
+      this.current.y = nextPiece.y;
+
+      nextPiece.x = tempX;
+      nextPiece.y = tempY;
+
       this.current = null;
+
+      this.clearHover();
     });
   }
   getPiece({ offsetY, offsetX }) {
+    for (let i = 0; i < this.board.length; i++) {
+      const piece = this.board[i];
+      if (
+        offsetX > piece.x &&
+        offsetX < piece.x + piece.width &&
+        offsetY > piece.y &&
+        offsetY < piece.y + piece.height
+      )
+        return piece;
+    }
+    return null;
+
     const y = Math.floor(offsetY / (this.canvas.height / this.size));
     const x = Math.floor(offsetX / (this.canvas.width / this.size));
 
@@ -115,5 +140,8 @@ class Game {
 
     this.canvas.width = width;
     this.canvas.height = height;
+  }
+  clearHover() {
+    this.board.forEach((piece) => (piece.isHover = false));
   }
 }
