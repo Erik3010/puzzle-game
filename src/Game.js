@@ -28,53 +28,74 @@ class Game {
     this.update();
   }
   listener() {
-    this.canvas.addEventListener("mousedown", (e) => {
-      this.current = this.getPiece(e);
-      this.current.lastPos = { x: this.current.x, y: this.current.y };
+    // TODO: Mouse event listener
+    this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
+    this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
+    this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
 
-      const index = this.board.indexOf(this.current);
-      if (index > -1) {
-        this.board.splice(index, 1);
-        this.board.push(this.current);
-      }
+    this.canvas.addEventListener("touchstart", (e) => {
+      const { left, top } = this.canvas.getBoundingClientRect();
+      const [{ pageX, pageY }] = e.touches;
 
-      this.mouse.x = e.offsetX - this.current.x;
-      this.mouse.y = e.offsetY - this.current.y;
+      this.onMouseDown({ offsetX: pageX - left, offsetY: pageY - top });
     });
+    this.canvas.addEventListener("touchmove", (e) => {
+      const { left, top } = this.canvas.getBoundingClientRect();
+      const [{ pageX, pageY }] = e.touches;
 
-    this.canvas.addEventListener("mousemove", (e) => {
-      this.clearHover();
-      const hoveredPiece = this.getPiece(e);
-      if (hoveredPiece) {
-        if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
-        document.body.style.cursor = this.current ? "grabbing" : "grab";
-      } else {
-        document.body.style.cursor = "default";
-      }
-
-      if (!this.current) return;
-
-      this.current.x = e.offsetX - this.mouse.x;
-      this.current.y = e.offsetY - this.mouse.y;
+      this.onMouseMove({ offsetX: pageX - left, offsetY: pageY - top });
     });
+    this.canvas.addEventListener("touchend", (e) => {
+      const { left, top } = this.canvas.getBoundingClientRect();
+      const [{ pageX, pageY }] = e.changedTouches;
 
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (!this.current.lastPos) return;
-
-      const nextPiece = this.getPiece(e);
-
-      const { x: tempX, y: tempY } = this.current.lastPos;
-
-      this.current.x = nextPiece.x;
-      this.current.y = nextPiece.y;
-
-      nextPiece.x = tempX;
-      nextPiece.y = tempY;
-
-      this.current = null;
-
-      this.clearHover();
+      this.onMouseUp({ offsetX: pageX - left, offsetY: pageY - top });
     });
+  }
+  onMouseDown(e) {
+    this.current = this.getPiece(e);
+    this.current.lastPos = { x: this.current.x, y: this.current.y };
+
+    const index = this.board.indexOf(this.current);
+    if (index > -1) {
+      this.board.splice(index, 1);
+      this.board.push(this.current);
+    }
+
+    this.mouse.x = e.offsetX - this.current.x;
+    this.mouse.y = e.offsetY - this.current.y;
+  }
+  onMouseMove(e) {
+    this.clearHover();
+    const hoveredPiece = this.getPiece(e);
+    if (hoveredPiece) {
+      if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
+      document.body.style.cursor = this.current ? "grabbing" : "grab";
+    } else {
+      document.body.style.cursor = "default";
+    }
+
+    if (!this.current) return;
+
+    this.current.x = e.offsetX - this.mouse.x;
+    this.current.y = e.offsetY - this.mouse.y;
+  }
+  onMouseUp(e) {
+    if (!this.current.lastPos) return;
+
+    const nextPiece = this.getPiece(e);
+
+    const { x: tempX, y: tempY } = this.current.lastPos;
+
+    this.current.x = nextPiece.x;
+    this.current.y = nextPiece.y;
+
+    nextPiece.x = tempX;
+    nextPiece.y = tempY;
+
+    this.current = null;
+
+    this.clearHover();
   }
   getPiece({ offsetY, offsetX }) {
     for (let i = 0; i < this.board.length; i++)
