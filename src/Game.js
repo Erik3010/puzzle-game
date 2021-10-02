@@ -43,17 +43,24 @@ class Game {
     });
 
     this.canvas.addEventListener("mousemove", (e) => {
+      this.clearHover();
+      const hoveredPiece = this.getPiece(e);
+      if (hoveredPiece) {
+        if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
+        document.body.style.cursor = this.current ? "grabbing" : "grab";
+      } else {
+        document.body.style.cursor = "default";
+      }
+
       if (!this.current) return;
 
       this.current.x = e.offsetX - this.mouse.x;
       this.current.y = e.offsetY - this.mouse.y;
-
-      this.clearHover();
-      const hoveredPiece = this.getPiece(e);
-      if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
+      if (!this.current.lastPos) return;
+
       const nextPiece = this.getPiece(e);
 
       const { x: tempX, y: tempY } = this.current.lastPos;
@@ -75,10 +82,6 @@ class Game {
         return this.board[i];
 
     return null;
-    // const y = Math.floor(offsetY / (this.canvas.height / this.size));
-    // const x = Math.floor(offsetX / (this.canvas.width / this.size));
-
-    // return this.board.find((piece) => piece.id === `${y}|${x}`);
   }
   generateBoard() {
     const randomPosition = Utility.generateRandomPos(this.size * this.size);
@@ -93,7 +96,6 @@ class Game {
           ctx: this.ctx,
           width,
           height,
-          // id: `${~~(index / this.size)}|${index % this.size}`,
           x: (index % this.size) * width,
           y: ~~(index / this.size) * height,
           rotate: Utility.random(0, 3),
