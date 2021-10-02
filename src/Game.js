@@ -50,7 +50,7 @@ class Game {
 
       this.clearHover();
       const hoveredPiece = this.getPiece(e);
-      if(hoveredPiece !== this.current) hoveredPiece.isHover = true;
+      if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
@@ -93,7 +93,7 @@ class Game {
           ctx: this.ctx,
           width,
           height,
-          id: `${~~(index / this.size)}|${index % this.size}`,
+          // id: `${~~(index / this.size)}|${index % this.size}`,
           x: (index % this.size) * width,
           y: ~~(index / this.size) * height,
           rotate: Utility.random(0, 3),

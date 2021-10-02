@@ -1,8 +1,6 @@
 class Piece {
-  constructor({ ctx, id, x, y, width, height, image, rotate, mask }) {
+  constructor({ ctx, x, y, width, height, image, rotate, mask }) {
     this.ctx = ctx;
-
-    this.id = id;
 
     this.x = x;
     this.y = y;
@@ -19,7 +17,6 @@ class Piece {
     this.isHover = false;
   }
   draw() {
-    this.ctx.beginPath();
     this.ctx.drawImage(
       this.image,
       this.mask.x,
@@ -31,14 +28,12 @@ class Piece {
       this.width,
       this.height
     );
-    this.ctx.rect(this.x, this.y, this.width, this.height);
-    this.ctx.strokeStyle = "#000";
-    this.ctx.stroke();
-    this.ctx.closePath();
 
-    if (this.isHover) this.hover();
+    if (this.x !== this.mask.x || this.y !== this.mask.y) this.drawStroke();
+
+    if (this.isHover) this.drawHover();
   }
-  hover() {
+  drawHover() {
     this.ctx.save();
 
     this.ctx.beginPath();
@@ -49,5 +44,12 @@ class Piece {
     this.ctx.closePath();
 
     this.ctx.restore();
+  }
+  drawStroke() {
+    this.ctx.beginPath();
+    this.ctx.rect(this.x, this.y, this.width, this.height);
+    this.ctx.strokeStyle = "#000";
+    this.ctx.stroke();
+    this.ctx.closePath();
   }
 }
