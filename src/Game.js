@@ -50,7 +50,7 @@ class Game {
 
       this.clearHover();
       const hoveredPiece = this.getPiece(e);
-      hoveredPiece.isHover = true;
+      if(hoveredPiece !== this.current) hoveredPiece.isHover = true;
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
