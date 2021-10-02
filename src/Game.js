@@ -131,7 +131,13 @@ class Game {
   update() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.board.forEach((board) => board.draw());
+    this.board.forEach((piece) => {
+      if (piece.x === piece.mask.x && piece.y === piece.mask.y)
+        piece.isMatched = true;
+      else piece.isMatched = false;
+
+      piece.draw();
+    });
 
     requestAnimationFrame(this.update.bind(this));
   }

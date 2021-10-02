@@ -14,6 +14,8 @@ class Piece {
 
     this.mask = mask;
 
+    this.isMatched = false;
+
     this.isHover = false;
   }
   draw() {
@@ -29,7 +31,7 @@ class Piece {
       this.height
     );
 
-    if (this.x !== this.mask.x || this.y !== this.mask.y) this.drawStroke();
+    if (!this.isMatched) this.drawStroke();
 
     if (this.isHover) this.drawHover();
   }
