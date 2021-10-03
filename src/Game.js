@@ -53,7 +53,11 @@ class Game {
     });
   }
   onMouseDown(e) {
-    this.current = this.getPiece(e);
+    const piece = this.getPiece(e);
+    if (piece.isMatched) return;
+
+    this.current = piece;
+
     this.current.lastPos = { x: this.current.x, y: this.current.y };
 
     const index = this.board.indexOf(this.current);
@@ -69,29 +73,41 @@ class Game {
     this.clearHover();
     const hoveredPiece = this.getPiece(e);
     if (hoveredPiece) {
-      if (hoveredPiece !== this.current) hoveredPiece.isHover = true;
+      if (hoveredPiece !== this.current && !hoveredPiece.isMatched)
+        hoveredPiece.isHover = true;
+
       document.body.style.cursor = this.current ? "grabbing" : "grab";
     } else {
       document.body.style.cursor = "default";
     }
 
-    if (!this.current) return;
+    if (!this.current || this.current.isMatched) return;
+    // if (!this.current) return;
 
     this.current.x = e.offsetX - this.mouse.x;
     this.current.y = e.offsetY - this.mouse.y;
   }
   onMouseUp(e) {
-    if (!this.current.lastPos) return;
+    // if (!this.current.lastPos) return;
+    if (!this.current?.lastPos || this.current.isMatched) {
+      this.current = null;
+      return;
+    }
 
     const nextPiece = this.getPiece(e);
 
     const { x: tempX, y: tempY } = this.current.lastPos;
 
-    this.current.x = nextPiece.x;
-    this.current.y = nextPiece.y;
+    if (!nextPiece.isMatched) {
+      this.current.x = nextPiece.x;
+      this.current.y = nextPiece.y;
 
-    nextPiece.x = tempX;
-    nextPiece.y = tempY;
+      nextPiece.x = tempX;
+      nextPiece.y = tempY;
+    } else {
+      this.current.x = this.current.lastPos.x;
+      this.current.y = this.current.lastPos.y;
+    }
 
     this.current = null;
 
@@ -129,17 +145,21 @@ class Game {
       });
   }
   update() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.isCompleted()) {
+      alert("Finish");
+    } else {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.board.forEach((piece) => {
-      if (piece.x === piece.mask.x && piece.y === piece.mask.y)
-        piece.isMatched = true;
-      else piece.isMatched = false;
+      this.board.forEach((piece) => {
+        if (piece.x === piece.mask.x && piece.y === piece.mask.y)
+          piece.isMatched = true;
+        else piece.isMatched = false;
 
-      piece.draw();
-    });
+        piece.draw();
+      });
 
-    requestAnimationFrame(this.update.bind(this));
+      requestAnimationFrame(this.update.bind(this));
+    }
   }
   async loadImages() {
     const images = this.images.map(this.loadImage);
@@ -163,5 +183,8 @@ class Game {
   }
   clearHover() {
     this.board.forEach((piece) => (piece.isHover = false));
+  }
+  isCompleted() {
+    return this.board.every((piece) => piece.isMatched);
   }
 }
