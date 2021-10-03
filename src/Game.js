@@ -28,11 +28,12 @@ class Game {
     this.update();
   }
   listener() {
-    // TODO: Mouse event listener
+    // TODO: Mouse event listener for desktop
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
 
+    // TODO: Touch event for mobile
     this.canvas.addEventListener("touchstart", (e) => {
       const { left, top } = this.canvas.getBoundingClientRect();
       const [{ pageX, pageY }] = e.touches;
@@ -54,7 +55,7 @@ class Game {
   }
   onMouseDown(e) {
     const piece = this.getPiece(e);
-    if (piece.isMatched) return;
+    if (piece.isMatched()) return;
 
     this.current = piece;
 
@@ -70,10 +71,10 @@ class Game {
     this.mouse.y = e.offsetY - this.current.y;
   }
   onMouseMove(e) {
-    this.clearHover();
+    this.sanitizeHoveredPiece();
     const hoveredPiece = this.getPiece(e);
     if (hoveredPiece) {
-      if (hoveredPiece !== this.current && !hoveredPiece.isMatched)
+      if (hoveredPiece !== this.current && !hoveredPiece.isMatched())
         hoveredPiece.isHover = true;
 
       document.body.style.cursor = this.current ? "grabbing" : "grab";
@@ -81,15 +82,13 @@ class Game {
       document.body.style.cursor = "default";
     }
 
-    if (!this.current || this.current.isMatched) return;
-    // if (!this.current) return;
+    if (!this.current || this.current.isMatched()) return;
 
     this.current.x = e.offsetX - this.mouse.x;
     this.current.y = e.offsetY - this.mouse.y;
   }
   onMouseUp(e) {
-    // if (!this.current.lastPos) return;
-    if (!this.current?.lastPos || this.current.isMatched) {
+    if (!this.current?.lastPos || this.current.isMatched()) {
       this.current = null;
       return;
     }
@@ -98,7 +97,7 @@ class Game {
 
     const { x: tempX, y: tempY } = this.current.lastPos;
 
-    if (!nextPiece.isMatched) {
+    if (!nextPiece.isMatched()) {
       this.current.x = nextPiece.x;
       this.current.y = nextPiece.y;
 
@@ -111,7 +110,7 @@ class Game {
 
     this.current = null;
 
-    this.clearHover();
+    this.sanitizeHoveredPiece();
   }
   getPiece({ offsetY, offsetX }) {
     for (let i = 0; i < this.board.length; i++)
@@ -145,18 +144,12 @@ class Game {
       });
   }
   update() {
-    if (this.isCompleted()) {
+    if (this.isAllMatched()) {
       alert("Finish");
     } else {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-      this.board.forEach((piece) => {
-        if (piece.x === piece.mask.x && piece.y === piece.mask.y)
-          piece.isMatched = true;
-        else piece.isMatched = false;
-
-        piece.draw();
-      });
+      this.board.forEach((piece) => piece.draw());
 
       requestAnimationFrame(this.update.bind(this));
     }
@@ -181,10 +174,10 @@ class Game {
     this.canvas.width = width;
     this.canvas.height = height;
   }
-  clearHover() {
+  sanitizeHoveredPiece() {
     this.board.forEach((piece) => (piece.isHover = false));
   }
-  isCompleted() {
-    return this.board.every((piece) => piece.isMatched);
+  isAllMatched() {
+    return this.board.every((piece) => piece.isMatched());
   }
 }

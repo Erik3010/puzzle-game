@@ -14,8 +14,6 @@ class Piece {
 
     this.mask = mask;
 
-    this.isMatched = false;
-
     this.isHover = false;
   }
   draw() {
@@ -31,7 +29,7 @@ class Piece {
       this.height
     );
 
-    if (!this.isMatched) this.drawStroke();
+    if (!this.isMatched()) this.drawStroke();
 
     if (this.isHover) this.drawHover();
   }
@@ -53,5 +51,8 @@ class Piece {
     this.ctx.strokeStyle = "#000";
     this.ctx.stroke();
     this.ctx.closePath();
+  }
+  isMatched() {
+    return this.x === this.mask.x && this.y === this.mask.y;
   }
 }
