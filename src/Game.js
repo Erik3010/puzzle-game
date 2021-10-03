@@ -34,23 +34,24 @@ class Game {
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
 
     // TODO: Touch event for mobile
-    this.canvas.addEventListener("touchstart", (e) => {
-      const { left, top } = this.canvas.getBoundingClientRect();
-      const [{ pageX, pageY }] = e.touches;
-
-      this.onMouseDown({ offsetX: pageX - left, offsetY: pageY - top });
+    this.canvas.addEventListener("touchstart", (event) => {
+      this.onMouseDown(
+        Utility.touchEventOffset({ event, element: this.canvas })
+      );
     });
-    this.canvas.addEventListener("touchmove", (e) => {
-      const { left, top } = this.canvas.getBoundingClientRect();
-      const [{ pageX, pageY }] = e.touches;
-
-      this.onMouseMove({ offsetX: pageX - left, offsetY: pageY - top });
+    this.canvas.addEventListener("touchmove", (event) => {
+      this.onMouseMove(
+        Utility.touchEventOffset({ event, element: this.canvas })
+      );
     });
-    this.canvas.addEventListener("touchend", (e) => {
-      const { left, top } = this.canvas.getBoundingClientRect();
-      const [{ pageX, pageY }] = e.changedTouches;
-
-      this.onMouseUp({ offsetX: pageX - left, offsetY: pageY - top });
+    this.canvas.addEventListener("touchend", (event) => {
+      this.onMouseUp(
+        Utility.touchEventOffset({
+          event,
+          element: this.canvas,
+          property: "changedTouches",
+        })
+      );
     });
   }
   onMouseDown(e) {

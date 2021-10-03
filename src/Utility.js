@@ -31,4 +31,10 @@ class Utility {
       position.y < piece.y + piece.height
     );
   }
+  static touchEventOffset({ element, event, property = "touches" }) {
+    const { left, top } = element.getBoundingClientRect();
+    const [{ pageX, pageY }] = event[property];
+
+    return { offsetX: pageX - left, offsetY: pageY - top };
+  }
 }
