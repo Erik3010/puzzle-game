@@ -1,12 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   outline: none;
-}
-
-#canvas {
-  border: 1px solid black;
+  /* prevent scroll chaining */
+  overscroll-behavior: none;
+  font-family: "Press Start 2P", sans-serif;
 }
 
 .container {
@@ -14,4 +15,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  background: #020529;
+}
+
+.game-header {
+  color: #fff;
+  margin-bottom: 4rem;
+  font-size: 1.25rem;
+}
+
+.game-board {
+  background: #1a216a;
+  padding: 1rem 1rem 0.8rem;
+  border-radius: 0.5rem;
+}
+
+#canvas {
+  background: #131853;
 }

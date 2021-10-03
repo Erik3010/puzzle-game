@@ -39,7 +39,7 @@ class Piece {
     this.ctx.beginPath();
     this.ctx.globalAlpha = "0.6";
     this.ctx.rect(this.x, this.y, this.width, this.height);
-    this.ctx.fillStyle = "#fff";
+    this.ctx.fillStyle = "rgb(19, 24, 83)";
     this.ctx.fill();
     this.ctx.closePath();
 
