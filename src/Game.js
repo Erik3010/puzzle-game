@@ -89,7 +89,7 @@ class Game {
     this.current.y = e.offsetY - this.mouse.y;
   }
   onMouseUp(e) {
-    if (!this.current?.lastPos || this.current.isMatched()) {
+    if (!this.current.lastPos || this.current.isMatched()) {
       this.current = null;
       return;
     }
